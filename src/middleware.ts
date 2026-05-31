@@ -21,9 +21,17 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth?.user;
   const role = req.auth?.user?.role;
 
+  // PWA・静的アセット（マニフェスト/アイコン/SW 等）は誰でもアクセス可。
+  const isStaticAsset =
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/sw.js" ||
+    /\.(png|ico|svg|jpg|jpeg|webp|txt|xml)$/.test(pathname);
+
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
   const isPublic =
-    pathname === "/" || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
+    pathname === "/" ||
+    isStaticAsset ||
+    PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 
   // 公開ページは常に許可（トップのランディングページ含む）
   if (isPublic) return NextResponse.next();
