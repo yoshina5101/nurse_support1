@@ -37,10 +37,14 @@ export default auth((req) => {
     return res;
   };
 
-  // PWA・静的アセット（マニフェスト/アイコン/SW 等）は誰でもアクセス可。
+  // PWA・SEO・静的アセット（マニフェスト/アイコン/SW/OGP/robots/sitemap 等）は
+  // 誰でもアクセス可（クローラ・SNSがアクセスできるように）。
   const isStaticAsset =
     pathname === "/manifest.webmanifest" ||
     pathname === "/sw.js" ||
+    pathname === "/opengraph-image" ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml" ||
     /\.(png|ico|svg|jpg|jpeg|webp|txt|xml)$/.test(pathname);
 
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
