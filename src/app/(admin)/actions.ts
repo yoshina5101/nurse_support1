@@ -122,3 +122,71 @@ export async function deleteContent(formData: FormData) {
   await prisma.content.delete({ where: { id } });
   revalidatePath("/admin/contents");
 }
+
+// ---- 小論文お題管理 ----
+export async function createEssayTheme(formData: FormData) {
+  await requireAdmin();
+  const title = String(formData.get("title") || "").trim();
+  const prompt = String(formData.get("prompt") || "").trim();
+  const isPremium = formData.get("isPremium") === "on";
+  if (!title || !prompt) return;
+  await prisma.essayTheme.create({ data: { title, prompt, isPremium } });
+  revalidatePath("/admin/essay-themes");
+}
+
+export async function updateEssayTheme(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const title = String(formData.get("title") || "").trim();
+  const prompt = String(formData.get("prompt") || "").trim();
+  const isPremium = formData.get("isPremium") === "on";
+  if (!id || !title || !prompt) return;
+  await prisma.essayTheme.update({
+    where: { id },
+    data: { title, prompt, isPremium },
+  });
+  revalidatePath("/admin/essay-themes");
+}
+
+export async function deleteEssayTheme(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  await prisma.essayTheme.delete({ where: { id } });
+  revalidatePath("/admin/essay-themes");
+}
+
+// ---- 面接質問管理 ----
+export async function createInterviewQuestion(formData: FormData) {
+  await requireAdmin();
+  const text = String(formData.get("text") || "").trim();
+  const category = String(formData.get("category") || "一般").trim();
+  const order = parseInt(String(formData.get("order") || "0"), 10) || 0;
+  const isPremium = formData.get("isPremium") === "on";
+  if (!text) return;
+  await prisma.interviewQuestion.create({
+    data: { text, category, order, isPremium },
+  });
+  revalidatePath("/admin/interview-questions");
+}
+
+export async function updateInterviewQuestion(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const text = String(formData.get("text") || "").trim();
+  const category = String(formData.get("category") || "一般").trim();
+  const order = parseInt(String(formData.get("order") || "0"), 10) || 0;
+  const isPremium = formData.get("isPremium") === "on";
+  if (!id || !text) return;
+  await prisma.interviewQuestion.update({
+    where: { id },
+    data: { text, category, order, isPremium },
+  });
+  revalidatePath("/admin/interview-questions");
+}
+
+export async function deleteInterviewQuestion(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  await prisma.interviewQuestion.delete({ where: { id } });
+  revalidatePath("/admin/interview-questions");
+}

@@ -5,6 +5,8 @@ const nav: NavItem[] = [
   { href: "/admin/users", label: "ユーザー管理", icon: "👥" },
   { href: "/admin/reports", label: "通報管理", icon: "🚩" },
   { href: "/admin/contents", label: "コンテンツ管理", icon: "📚" },
+  { href: "/admin/essay-themes", label: "小論文お題管理", icon: "✍️" },
+  { href: "/admin/interview-questions", label: "面接質問管理", icon: "🎤" },
 ];
 
 export default async function AdminLayout({
