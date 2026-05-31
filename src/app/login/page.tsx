@@ -2,6 +2,7 @@ import Link from "next/link";
 import { signIn } from "@/lib/auth";
 import { AuthError } from "next-auth";
 import { redirect } from "next/navigation";
+import { Logo } from "@/components/Logo";
 
 export default async function LoginPage({
   searchParams,
@@ -30,10 +31,12 @@ export default async function LoginPage({
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-brand-700">ナースキャリア</h1>
-          <p className="mt-1 text-sm text-gray-500">新卒看護師のための就活支援</p>
+      <div className="w-full max-w-md animate-fade-in-up">
+        <div className="mb-8 flex flex-col items-center text-center">
+          <Link href="/">
+            <Logo textClass="text-xl" />
+          </Link>
+          <p className="mt-2 text-sm text-gray-500">新卒看護師のための就活支援</p>
         </div>
         <form action={login} className="card space-y-4">
           <h2 className="text-lg font-semibold">ログイン</h2>

@@ -22,9 +22,10 @@ export default auth((req) => {
   const role = req.auth?.user?.role;
 
   const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
-  const isPublic = PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
+  const isPublic =
+    pathname === "/" || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 
-  // 公開ページは常に許可
+  // 公開ページは常に許可（トップのランディングページ含む）
   if (isPublic) return NextResponse.next();
 
   // 未ログインで保護ページにアクセス → ログインへ
