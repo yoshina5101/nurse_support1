@@ -9,6 +9,7 @@ import {
 import { checkAiUsage } from "@/lib/usage";
 import { stripeEnabled } from "@/lib/stripe";
 import { BillingButtons } from "@/components/BillingButtons";
+import { isAppMode } from "@/lib/appMode";
 
 export default async function BillingPage({
   searchParams,
@@ -21,6 +22,7 @@ export default async function BillingPage({
 }) {
   const user = await requireUser();
   const params = await searchParams;
+  const appMode = await isAppMode();
 
   const [price, sixMonthPrice, usage, freeLimit, premiumLimit, dbUser] =
     await Promise.all([
@@ -34,6 +36,44 @@ export default async function BillingPage({
         select: { premiumUntil: true },
       }),
     ]);
+
+  // アプリ（TWA）モードでは、価格・購入導線を一切出さない
+  // （Google Play課金ルールに抵触しないため）。現在のプラン状態と
+  // 利用状況のみを表示する。
+  if (appMode) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">プラン・ご利用状況</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            現在のプランとご利用状況を確認できます。
+          </p>
+        </div>
+        <div className="card">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-gray-800">現在のプラン</h3>
+            <span
+              className={`badge ${
+                user.plan === "PREMIUM"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {user.plan === "PREMIUM" ? "プレミアム" : "無料"}
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-gray-600">
+            {usage.limit < 0
+              ? `本日のAI利用：${usage.used} 回（無制限）`
+              : `本日のAI利用：${usage.used} / ${usage.limit} 回（残り ${usage.remaining} 回）`}
+          </p>
+        </div>
+        <p className="text-xs text-gray-400">
+          ※ プランの変更は、ブラウザ版のマイページから行えます。
+        </p>
+      </div>
+    );
+  }
 
   const premiumUntil = dbUser?.premiumUntil ?? null;
   // 月額換算（6ヶ月パックの割安感を見せる）

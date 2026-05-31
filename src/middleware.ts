@@ -21,6 +21,22 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth?.user;
   const role = req.auth?.user?.role;
 
+  // アプリ（TWA）判定：?mode=app で app_mode Cookie を立て、?mode=web で消す。
+  // どの応答を返す場合でもこのCookie操作を反映できるよう、ヘルパーで包む。
+  const modeParam = req.nextUrl.searchParams.get("mode");
+  const applyMode = (res: ReturnType<typeof NextResponse.next>) => {
+    if (modeParam === "app") {
+      res.cookies.set("app_mode", "1", {
+        maxAge: 60 * 60 * 24 * 365,
+        path: "/",
+        sameSite: "lax",
+      });
+    } else if (modeParam === "web") {
+      res.cookies.delete("app_mode");
+    }
+    return res;
+  };
+
   // PWA・静的アセット（マニフェスト/アイコン/SW 等）は誰でもアクセス可。
   const isStaticAsset =
     pathname === "/manifest.webmanifest" ||
@@ -34,27 +50,27 @@ export default auth((req) => {
     PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
 
   // 公開ページは常に許可（トップのランディングページ含む）
-  if (isPublic) return NextResponse.next();
+  if (isPublic) return applyMode(NextResponse.next());
 
   // 未ログインで保護ページにアクセス → ログインへ
   if (!isLoggedIn && !isAuthPage) {
     const url = new URL("/login", req.nextUrl.origin);
     url.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(url);
+    return applyMode(NextResponse.redirect(url));
   }
 
   // ログイン済みでログイン/登録ページ → ダッシュボードへ
   if (isLoggedIn && isAuthPage) {
     const dest = role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
-    return NextResponse.redirect(new URL(dest, req.nextUrl.origin));
+    return applyMode(NextResponse.redirect(new URL(dest, req.nextUrl.origin)));
   }
 
   // 管理画面は ADMIN のみ
   if (pathname.startsWith("/admin") && role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin));
+    return applyMode(NextResponse.redirect(new URL("/dashboard", req.nextUrl.origin)));
   }
 
-  return NextResponse.next();
+  return applyMode(NextResponse.next());
 });
 
 export const config = {

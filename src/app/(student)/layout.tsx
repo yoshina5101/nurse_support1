@@ -2,8 +2,9 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { Shell, type NavItem } from "@/components/Shell";
 import { VerifyBanner } from "@/components/VerifyBanner";
+import { isAppMode } from "@/lib/appMode";
 
-const nav: NavItem[] = [
+const baseNav: NavItem[] = [
   { href: "/dashboard", label: "ダッシュボード", icon: "🏠" },
   { href: "/applications", label: "応募先・選考管理", icon: "🏥" },
   { href: "/self-analysis", label: "自己分析", icon: "🔍" },
@@ -12,8 +13,9 @@ const nav: NavItem[] = [
   { href: "/interview", label: "面接練習", icon: "🎤" },
   { href: "/chat", label: "チャット", icon: "💬" },
   { href: "/contents", label: "お役立ち記事", icon: "📚" },
-  { href: "/billing", label: "プラン", icon: "💳" },
 ];
+// 課金導線（プラン）はアプリモードでは出さない（Google Play課金ルール対策）
+const billingNav: NavItem = { href: "/billing", label: "プラン", icon: "💳" };
 
 export default async function StudentLayout({
   children,
@@ -21,6 +23,8 @@ export default async function StudentLayout({
   children: React.ReactNode;
 }) {
   const user = await requireUser();
+  const appMode = await isAppMode();
+  const nav = appMode ? baseNav : [...baseNav, billingNav];
   const dbUser = await prisma.user.findUnique({
     where: { id: user.id },
     select: { emailVerified: true },

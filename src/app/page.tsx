@@ -2,12 +2,15 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/session";
 import { Logo } from "@/components/Logo";
+import { isAppMode } from "@/lib/appMode";
 
 export default async function Home() {
   const user = await getCurrentUser();
   if (user) {
     redirect(user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
   }
+  // アプリ（TWA）モードでは料金セクションを出さない
+  const appMode = await isAppMode();
 
   const features = [
     {
@@ -145,7 +148,8 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 料金 */}
+      {/* 料金（アプリモードでは非表示） */}
+      {!appMode && (
       <section className="mx-auto max-w-5xl px-5 py-12">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800">料金プラン</h2>
@@ -207,6 +211,7 @@ export default async function Home() {
           ※ AIによる添削・分析は参考情報です。最終的な判断はご自身で行ってください。
         </p>
       </section>
+      )}
 
       {/* CTA */}
       <section className="mx-auto max-w-5xl px-5 py-12">
