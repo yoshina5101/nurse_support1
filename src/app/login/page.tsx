@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; callbackUrl?: string }>;
+  searchParams: Promise<{ error?: string; callbackUrl?: string; reset?: string }>;
 }) {
   const params = await searchParams;
 
@@ -37,6 +37,11 @@ export default async function LoginPage({
         </div>
         <form action={login} className="card space-y-4">
           <h2 className="text-lg font-semibold">ログイン</h2>
+          {params.reset && (
+            <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+              パスワードを変更しました。新しいパスワードでログインしてください。
+            </p>
+          )}
           {params.error && (
             <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
               メールアドレスまたはパスワードが正しくありません。
@@ -71,6 +76,14 @@ export default async function LoginPage({
           <button type="submit" className="btn-primary w-full">
             ログイン
           </button>
+          <p className="text-center text-sm">
+            <Link
+              href="/forgot-password"
+              className="text-brand-600 hover:underline"
+            >
+              パスワードをお忘れですか？
+            </Link>
+          </p>
           <p className="text-center text-sm text-gray-500">
             アカウントをお持ちでない方は{" "}
             <Link href="/register" className="text-brand-600 hover:underline">

@@ -7,8 +7,14 @@ const { auth } = NextAuth(authConfig);
 
 // ログイン済みならダッシュボードへ飛ばす「認証ページ」
 const AUTH_PAGES = ["/login", "/register"];
-// 誰でもアクセスできる「公開ページ」（法務ページ・Stripe Webhook 等）
-const PUBLIC_PREFIXES = ["/legal", "/api/billing/webhook"];
+// 誰でもアクセスできる「公開ページ」（法務・メール確認・パスワード再設定・Webhook 等）
+const PUBLIC_PREFIXES = [
+  "/legal",
+  "/api/billing/webhook",
+  "/verify-email",
+  "/forgot-password",
+  "/reset-password",
+];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;

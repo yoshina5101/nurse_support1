@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
-import { signIn } from "@/lib/auth";
+import { issueEmailVerification } from "@/app/(auth-actions)/authActions";
 
 export default async function RegisterPage({
   searchParams,
@@ -31,19 +31,29 @@ export default async function RegisterPage({
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: { name, email, passwordHash, role: "STUDENT", plan: "FREE" },
     });
 
-    await signIn("credentials", { email, password, redirectTo: "/dashboard" });
+    // 確認メールを送信（SMTP未設定なら確認ページにリンクを表示）
+    const result = await issueEmailVerification(user.id, email);
+    redirect(
+      result.sent
+        ? "/verify-email/sent"
+        : `/verify-email/sent?devToken=${encodeURIComponent(
+            result.devLink?.split("token=")[1] ?? ""
+          )}`
+    );
   }
 
   const errorMessage =
     params.error === "exists"
       ? "このメールアドレスは既に登録されています。"
-      : params.error === "invalid"
-        ? "入力内容を確認してください（パスワードは6文字以上）。"
-        : null;
+      : params.error === "agree"
+        ? "利用規約とプライバシーポリシーへの同意が必要です。"
+        : params.error === "invalid"
+          ? "入力内容を確認してください（パスワードは6文字以上）。"
+          : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center px-4">

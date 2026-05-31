@@ -1,5 +1,7 @@
 import { requireUser } from "@/lib/session";
+import { prisma } from "@/lib/db";
 import { Shell, type NavItem } from "@/components/Shell";
+import { VerifyBanner } from "@/components/VerifyBanner";
 
 const nav: NavItem[] = [
   { href: "/dashboard", label: "ダッシュボード", icon: "🏠" },
@@ -18,6 +20,10 @@ export default async function StudentLayout({
   children: React.ReactNode;
 }) {
   const user = await requireUser();
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { emailVerified: true },
+  });
   const planBadge = (
     <span
       className={`badge ${
@@ -37,6 +43,7 @@ export default async function StudentLayout({
       badge={planBadge}
       nav={nav}
     >
+      {!dbUser?.emailVerified && <VerifyBanner />}
       {children}
     </Shell>
   );
