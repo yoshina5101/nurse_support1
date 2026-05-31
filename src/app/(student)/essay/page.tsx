@@ -1,18 +1,31 @@
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { EssayForm } from "@/components/EssayForm";
+import { ScoreTrend } from "@/components/ScoreTrend";
 
 export default async function EssayPage() {
   const user = await requireUser();
 
-  const [themes, pastEssays] = await Promise.all([
+  const [themes, pastEssays, scored] = await Promise.all([
     prisma.essayTheme.findMany({ orderBy: { createdAt: "asc" } }),
     prisma.essay.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    // 点数推移グラフ用：得点済みを古い順に最大10件
+    prisma.essay.findMany({
+      where: { userId: user.id, score: { not: null } },
+      orderBy: { createdAt: "asc" },
+      take: 10,
+      select: { score: true, createdAt: true },
+    }),
   ]);
+
+  const trendPoints = scored.map((e) => ({
+    score: e.score as number,
+    date: e.createdAt,
+  }));
 
   const themeOptions = themes.map((t) => ({
     id: t.id,
@@ -32,6 +45,8 @@ export default async function EssayPage() {
       </div>
 
       <EssayForm themes={themeOptions} />
+
+      <ScoreTrend points={trendPoints} label="小論文 点数の推移" />
 
       {pastEssays.length > 0 && (
         <div className="card">

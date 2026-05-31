@@ -1,11 +1,12 @@
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
 import { InterviewForm } from "@/components/InterviewForm";
+import { ScoreTrend } from "@/components/ScoreTrend";
 
 export default async function InterviewPage() {
   const user = await requireUser();
 
-  const [questions, pastSessions] = await Promise.all([
+  const [questions, pastSessions, scored] = await Promise.all([
     prisma.interviewQuestion.findMany({
       orderBy: [{ order: "asc" }, { createdAt: "asc" }],
     }),
@@ -14,7 +15,18 @@ export default async function InterviewPage() {
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    prisma.interviewSession.findMany({
+      where: { userId: user.id, score: { not: null } },
+      orderBy: { createdAt: "asc" },
+      take: 10,
+      select: { score: true, createdAt: true },
+    }),
   ]);
+
+  const trendPoints = scored.map((s) => ({
+    score: s.score as number,
+    date: s.createdAt,
+  }));
 
   const questionOptions = questions.map((q) => ({
     id: q.id,
@@ -34,6 +46,8 @@ export default async function InterviewPage() {
       </div>
 
       <InterviewForm questions={questionOptions} />
+
+      <ScoreTrend points={trendPoints} label="面接 点数の推移" />
 
       {pastSessions.length > 0 && (
         <div className="card">

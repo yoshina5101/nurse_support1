@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 type Theme = {
   id: string;
@@ -13,6 +14,7 @@ type Theme = {
 
 export function EssayForm({ themes }: { themes: Theme[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [selectedId, setSelectedId] = useState<string>(themes[0]?.id ?? "custom");
   const [customTheme, setCustomTheme] = useState("");
   const [body, setBody] = useState("");
@@ -48,9 +50,17 @@ export function EssayForm({ themes }: { themes: Theme[] }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "failed");
       setResult({ feedback: data.feedback, score: data.score });
+      toast.show(
+        data.score != null
+          ? `AI添削が完了しました（${data.score}点）`
+          : "AI添削が完了しました",
+        "success"
+      );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "添削に失敗しました。");
+      const msg = err instanceof Error ? err.message : "添削に失敗しました。";
+      setError(msg);
+      toast.show(msg, "error");
     } finally {
       setLoading(false);
     }

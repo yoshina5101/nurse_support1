@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 export function SelfAnalysisForm({
   questions,
@@ -11,6 +12,7 @@ export function SelfAnalysisForm({
   initialAnswers?: Record<string, string>;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [answers, setAnswers] = useState<Record<string, string>>(
     initialAnswers ?? {}
   );
@@ -32,11 +34,13 @@ export function SelfAnalysisForm({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "分析に失敗しました。");
       setSummary(data.aiSummary);
+      toast.show("AI分析が完了しました", "success");
       router.refresh();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "分析に失敗しました。もう一度お試しください。"
-      );
+      const msg =
+        err instanceof Error ? err.message : "分析に失敗しました。もう一度お試しください。";
+      setError(msg);
+      toast.show(msg, "error");
     } finally {
       setLoading(false);
     }

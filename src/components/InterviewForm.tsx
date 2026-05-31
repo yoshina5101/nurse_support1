@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 type Question = {
   id: string;
@@ -13,6 +14,7 @@ type Question = {
 
 export function InterviewForm({ questions }: { questions: Question[] }) {
   const router = useRouter();
+  const toast = useToast();
   const [selectedId, setSelectedId] = useState<string>(
     questions[0]?.id ?? "custom"
   );
@@ -113,9 +115,17 @@ export function InterviewForm({ questions }: { questions: Question[] }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "failed");
       setResult({ feedback: data.feedback, score: data.score });
+      toast.show(
+        data.score != null
+          ? `AIレビューが完了しました（${data.score}点）`
+          : "AIレビューが完了しました",
+        "success"
+      );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "レビューに失敗しました。");
+      const msg = err instanceof Error ? err.message : "レビューに失敗しました。";
+      setError(msg);
+      toast.show(msg, "error");
     } finally {
       setLoading(false);
     }
