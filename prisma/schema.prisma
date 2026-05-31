@@ -1,0 +1,144 @@
+// 新卒看護師向け 就職支援アプリ — DBスキーマ
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PREMIUM
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum ReportStatus {
+  OPEN
+  RESOLVED
+  DISMISSED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         Role       @default(STUDENT)
+  plan         Plan       @default(FREE)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  selfAnalyses SelfAnalysis[]
+  resumes      Resume[]
+  essays       Essay[]
+  messages     ChatMessage[]
+  reports      Report[]       @relation("Reporter")
+}
+
+// 自己分析：設問への回答（JSON）とAIによる要約
+model SelfAnalysis {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  answers   Json
+  aiSummary String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 履歴書：構造化した内容（JSON）とAI添削
+model Resume {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String   @default("私の履歴書")
+  content    Json
+  aiFeedback String?  @db.Text
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// 小論文お題マスタ
+model EssayTheme {
+  id        String   @id @default(cuid())
+  title     String
+  prompt    String   @db.Text
+  isPremium Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  essays Essay[]
+}
+
+// 小論文：本文とAI添削・点数
+model Essay {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  themeId    String?
+  theme      EssayTheme? @relation(fields: [themeId], references: [id], onDelete: SetNull)
+  themeText  String      @db.Text
+  body       String      @db.Text
+  aiFeedback String?     @db.Text
+  score      Int?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model ChatRoom {
+  id          String        @id @default(cuid())
+  name        String
+  description String        @default("")
+  isPremium   Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  room      ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String   @db.Text
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  reports Report[]
+}
+
+// チャットメッセージへの通報
+model Report {
+  id         String       @id @default(cuid())
+  messageId  String
+  message    ChatMessage  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  reporterId String
+  reporter   User         @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reason     String       @db.Text
+  status     ReportStatus @default(OPEN)
+  createdAt  DateTime     @default(now())
+  resolvedAt DateTime?
+}
+
+// 有料/無料コンテンツ
+model Content {
+  id          String    @id @default(cuid())
+  title       String
+  body        String    @db.Text
+  category    String    @default("お役立ち")
+  isPremium   Boolean   @default(false)
+  publishedAt DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

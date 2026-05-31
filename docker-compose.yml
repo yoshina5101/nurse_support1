@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: nurse_support_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nurse
+      POSTGRES_PASSWORD: nurse
+      POSTGRES_DB: nurse_support
+    ports:
+      - "5432:5432"
+    volumes:
+      - nurse_pgdata:/var/lib/postgresql/data
+
+volumes:
+  nurse_pgdata:
