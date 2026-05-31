@@ -39,14 +39,16 @@ export function ResumeForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, title, content, review }),
       });
-      if (!res.ok) throw new Error("failed");
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "処理に失敗しました。");
       setId(data.id);
       if (review) setFeedback(data.aiFeedback);
       setMessage(review ? "AI添削が完了しました。" : "保存しました。");
       router.refresh();
-    } catch {
-      setMessage("処理に失敗しました。もう一度お試しください。");
+    } catch (err) {
+      setMessage(
+        err instanceof Error ? err.message : "処理に失敗しました。もう一度お試しください。"
+      );
     } finally {
       setReviewing(false);
       setSaving(false);

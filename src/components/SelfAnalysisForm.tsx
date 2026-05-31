@@ -29,12 +29,14 @@ export function SelfAnalysisForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answers }),
       });
-      if (!res.ok) throw new Error("failed");
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "分析に失敗しました。");
       setSummary(data.aiSummary);
       router.refresh();
-    } catch {
-      setError("分析に失敗しました。もう一度お試しください。");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "分析に失敗しました。もう一度お試しください。"
+      );
     } finally {
       setLoading(false);
     }

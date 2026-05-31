@@ -86,6 +86,19 @@ export default async function LoginPage({
             <li>管理者: admin@example.com</li>
           </ul>
         </div>
+        <p className="mt-4 text-center text-xs text-gray-400">
+          <a href="/legal/terms" className="hover:underline">
+            利用規約
+          </a>{" "}
+          ・{" "}
+          <a href="/legal/privacy" className="hover:underline">
+            プライバシーポリシー
+          </a>{" "}
+          ・{" "}
+          <a href="/legal/tokushoho" className="hover:underline">
+            特定商取引法に基づく表記
+          </a>
+        </p>
       </div>
     </main>
   );

@@ -30,15 +30,16 @@ enum ReportStatus {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
-  passwordHash String
-  name         String
-  role         Role       @default(STUDENT)
-  plan         Plan       @default(FREE)
-  status       UserStatus @default(ACTIVE)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id               String     @id @default(cuid())
+  email            String     @unique
+  passwordHash     String
+  name             String
+  role             Role       @default(STUDENT)
+  plan             Plan       @default(FREE)
+  status           UserStatus @default(ACTIVE)
+  stripeCustomerId String?    @unique
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
   selfAnalyses SelfAnalysis[]
   resumes      Resume[]
@@ -46,6 +47,25 @@ model User {
   messages     ChatMessage[]
   reports      Report[]            @relation("Reporter")
   interviews   InterviewSession[]
+  aiUsages     AiUsage[]
+}
+
+// アプリ設定（key-value）。利用上限や価格を管理画面から変更するために使う。
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+// AI機能の日次利用カウント（userId × 日付[JST] で1レコード）。
+model AiUsage {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date   String // YYYY-MM-DD (JST)
+  count  Int    @default(0)
+
+  @@unique([userId, date])
 }
 
 // 自己分析：設問への回答（JSON）とAIによる要約

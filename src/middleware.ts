@@ -5,24 +5,31 @@ import { authConfig } from "@/lib/auth.config";
 // Edge 安全な設定のみで NextAuth を初期化（Prisma / bcrypt を含まない）
 const { auth } = NextAuth(authConfig);
 
-const PUBLIC_PATHS = ["/login", "/register"];
+// ログイン済みならダッシュボードへ飛ばす「認証ページ」
+const AUTH_PAGES = ["/login", "/register"];
+// 誰でもアクセスできる「公開ページ」（法務ページ・Stripe Webhook 等）
+const PUBLIC_PREFIXES = ["/legal", "/api/billing/webhook"];
 
 export default auth((req) => {
   const { pathname } = req.nextUrl;
   const isLoggedIn = !!req.auth?.user;
   const role = req.auth?.user?.role;
 
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+  const isAuthPage = AUTH_PAGES.some((p) => pathname.startsWith(p));
+  const isPublic = PUBLIC_PREFIXES.some((p) => pathname.startsWith(p));
+
+  // 公開ページは常に許可
+  if (isPublic) return NextResponse.next();
 
   // 未ログインで保護ページにアクセス → ログインへ
-  if (!isLoggedIn && !isPublic) {
+  if (!isLoggedIn && !isAuthPage) {
     const url = new URL("/login", req.nextUrl.origin);
     url.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(url);
   }
 
   // ログイン済みでログイン/登録ページ → ダッシュボードへ
-  if (isLoggedIn && isPublic) {
+  if (isLoggedIn && isAuthPage) {
     const dest = role === "ADMIN" ? "/admin/users" : "/dashboard";
     return NextResponse.redirect(new URL(dest, req.nextUrl.origin));
   }

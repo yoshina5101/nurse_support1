@@ -16,7 +16,11 @@ export default async function RegisterPage({
     const name = String(formData.get("name") || "").trim();
     const email = String(formData.get("email") || "").trim();
     const password = String(formData.get("password") || "");
+    const agree = formData.get("agree") === "on";
 
+    if (!agree) {
+      redirect("/register?error=agree");
+    }
     if (!name || !email || password.length < 6) {
       redirect("/register?error=invalid");
     }
@@ -80,6 +84,27 @@ export default async function RegisterPage({
               className="input"
             />
           </div>
+          <label className="flex items-start gap-2 text-sm text-gray-600">
+            <input type="checkbox" name="agree" className="mt-0.5" />
+            <span>
+              <a
+                href="/legal/terms"
+                target="_blank"
+                className="text-brand-600 hover:underline"
+              >
+                利用規約
+              </a>
+              および
+              <a
+                href="/legal/privacy"
+                target="_blank"
+                className="text-brand-600 hover:underline"
+              >
+                プライバシーポリシー
+              </a>
+              に同意します
+            </span>
+          </label>
           <button type="submit" className="btn-primary w-full">
             登録する
           </button>
@@ -90,6 +115,19 @@ export default async function RegisterPage({
             </Link>
           </p>
         </form>
+        <p className="mt-4 text-center text-xs text-gray-400">
+          <a href="/legal/terms" className="hover:underline">
+            利用規約
+          </a>{" "}
+          ・{" "}
+          <a href="/legal/privacy" className="hover:underline">
+            プライバシーポリシー
+          </a>{" "}
+          ・{" "}
+          <a href="/legal/tokushoho" className="hover:underline">
+            特定商取引法に基づく表記
+          </a>
+        </p>
       </div>
     </main>
   );

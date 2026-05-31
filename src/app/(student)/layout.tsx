@@ -9,6 +9,7 @@ const nav: NavItem[] = [
   { href: "/interview", label: "面接練習", icon: "🎤" },
   { href: "/chat", label: "チャット", icon: "💬" },
   { href: "/contents", label: "お役立ち記事", icon: "📚" },
+  { href: "/billing", label: "プラン", icon: "💳" },
 ];
 
 export default async function StudentLayout({

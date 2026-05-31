@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/session";
+import { setSetting, type SettingKey } from "@/lib/settings";
 
 // ---- ユーザー管理 ----
 export async function createStudent(formData: FormData) {
@@ -189,4 +190,30 @@ export async function deleteInterviewQuestion(formData: FormData) {
   const id = String(formData.get("id") || "");
   await prisma.interviewQuestion.delete({ where: { id } });
   revalidatePath("/admin/interview-questions");
+}
+
+// ---- アプリ設定（利用上限・価格） ----
+export async function updateSettings(formData: FormData) {
+  await requireAdmin();
+  const entries: [SettingKey, string][] = [
+    ["freeDailyLimit", String(formData.get("freeDailyLimit") ?? "").trim()],
+    [
+      "premiumDailyLimit",
+      String(formData.get("premiumDailyLimit") ?? "").trim(),
+    ],
+    ["premiumPriceJpy", String(formData.get("premiumPriceJpy") ?? "").trim()],
+  ];
+  for (const [key, value] of entries) {
+    // 数値として妥当なものだけ保存（premiumDailyLimit は -1=無制限を許可）
+    if (value === "") continue;
+    const n = parseInt(value, 10);
+    if (!Number.isFinite(n)) continue;
+    if (key === "premiumDailyLimit") {
+      if (n < -1) continue;
+    } else if (n < 0) {
+      continue;
+    }
+    await setSetting(key, String(n));
+  }
+  revalidatePath("/admin/settings");
 }

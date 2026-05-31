@@ -187,6 +187,20 @@ async function main() {
     });
   }
 
+  // アプリ設定（利用上限・価格）のデフォルト
+  const settingsDefaults: { key: string; value: string }[] = [
+    { key: "freeDailyLimit", value: "3" },
+    { key: "premiumDailyLimit", value: "30" },
+    { key: "premiumPriceJpy", value: "980" },
+  ];
+  for (const s of settingsDefaults) {
+    await prisma.appSetting.upsert({
+      where: { key: s.key },
+      update: {},
+      create: s,
+    });
+  }
+
   console.log("Seed completed:", {
     admin: admin.email,
     student: student.email,
