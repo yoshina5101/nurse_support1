@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { stripe, STRIPE_WEBHOOK_SECRET } from "@/lib/stripe";
+import { addMonths, SIX_MONTH_MONTHS } from "@/lib/settings";
 import type Stripe from "stripe";
 
 // Stripe Webhook：決済完了でPREMIUM化、サブスク解約でFREE化。
