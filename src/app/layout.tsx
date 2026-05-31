@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
+import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
   title: "ナースキャリア | 新卒看護師の就活支援",
@@ -13,7 +15,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className="min-h-screen antialiased">{children}</body>
+      <body className="min-h-screen antialiased">
+        <Suspense>
+          <ToastProvider>{children}</ToastProvider>
+        </Suspense>
+      </body>
     </html>
   );
 }

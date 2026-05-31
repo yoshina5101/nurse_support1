@@ -37,7 +37,7 @@ export default auth((req) => {
 
   // ログイン済みでログイン/登録ページ → ダッシュボードへ
   if (isLoggedIn && isAuthPage) {
-    const dest = role === "ADMIN" ? "/admin/users" : "/dashboard";
+    const dest = role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
     return NextResponse.redirect(new URL(dest, req.nextUrl.origin));
   }
 

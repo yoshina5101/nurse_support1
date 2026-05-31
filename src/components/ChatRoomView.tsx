@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useToast } from "@/components/Toast";
 
 type Message = {
   id: string;
@@ -12,6 +13,7 @@ type Message = {
 };
 
 export function ChatRoomView({ roomId }: { roomId: string }) {
+  const toast = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -78,9 +80,9 @@ export function ChatRoomView({ roomId }: { roomId: string }) {
       body: JSON.stringify({ messageId, reason }),
     });
     if (res.ok) {
-      alert("通報を受け付けました。ご協力ありがとうございます。");
+      toast.show("通報を受け付けました。ご協力ありがとうございます。", "success");
     } else {
-      alert("通報に失敗しました。");
+      toast.show("通報に失敗しました。", "error");
     }
   }
 

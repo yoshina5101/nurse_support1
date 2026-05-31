@@ -13,7 +13,12 @@ export async function getCurrentUser() {
 
   const dbUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { plan: true, role: true, premiumUntil: true },
+    select: {
+      plan: true,
+      role: true,
+      premiumUntil: true,
+      organization: { select: { premiumUntil: true } },
+    },
   });
   if (!dbUser) return session.user;
 
@@ -30,6 +35,12 @@ export async function getCurrentUser() {
       where: { id: session.user.id },
       data: { plan: "FREE", premiumUntil: null },
     });
+  }
+
+  // B2B：所属組織が有効なプレミアム契約中なら、メンバーはプレミアム扱い。
+  const orgUntil = dbUser.organization?.premiumUntil;
+  if (plan === "FREE" && orgUntil && orgUntil.getTime() > Date.now()) {
+    plan = "PREMIUM";
   }
 
   return { ...session.user, plan, role: dbUser.role };

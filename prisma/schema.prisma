@@ -40,9 +40,11 @@ model User {
   emailVerified    DateTime?
   stripeCustomerId String?    @unique
   premiumUntil     DateTime?  // 6ヶ月パック等、買い切りプレミアムの有効期限
+  organizationId   String?    // 所属組織（学校・病院）。B2B契約のメンバー
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 
+  organization Organization?      @relation(fields: [organizationId], references: [id], onDelete: SetNull)
   selfAnalyses SelfAnalysis[]
   resumes      Resume[]
   essays       Essay[]
@@ -52,6 +54,21 @@ model User {
   aiUsages     AiUsage[]
   tokens       VerificationToken[]
   applications Application[]
+}
+
+// B2B：学校・病院などの組織。所属メンバーに一括でプレミアムを付与できる。
+model Organization {
+  id           String   @id @default(cuid())
+  name         String
+  kind         String   @default("学校") // 学校 / 病院 / その他
+  seats        Int      @default(0) // 契約シート数（0は無制限）
+  premiumUntil DateTime? // 組織契約のプレミアム有効期限（メンバーに適用）
+  contactEmail String   @default("")
+  note         String   @db.Text @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  members User[]
 }
 
 // 応募先（病院・施設）の選考ステータス。

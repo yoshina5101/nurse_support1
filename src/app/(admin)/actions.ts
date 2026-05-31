@@ -218,3 +218,82 @@ export async function updateSettings(formData: FormData) {
   }
   revalidatePath("/admin/settings");
 }
+
+// ---- B2B：組織（学校・病院）管理 ----
+function addMonthsFromNow(months: number): Date {
+  const d = new Date();
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+export async function createOrganization(formData: FormData) {
+  await requireAdmin();
+  const name = String(formData.get("name") || "").trim();
+  if (!name) return;
+  const kind = String(formData.get("kind") || "学校").trim();
+  const seats = parseInt(String(formData.get("seats") || "0"), 10) || 0;
+  const months = parseInt(String(formData.get("months") || "0"), 10) || 0;
+  await prisma.organization.create({
+    data: {
+      name,
+      kind,
+      seats,
+      contactEmail: String(formData.get("contactEmail") || "").trim(),
+      note: String(formData.get("note") || "").trim(),
+      premiumUntil: months > 0 ? addMonthsFromNow(months) : null,
+    },
+  });
+  revalidatePath("/admin/organizations");
+}
+
+// 契約期間を延長（今からNヶ月）。
+export async function extendOrganization(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  const months = parseInt(String(formData.get("months") || "0"), 10) || 0;
+  if (!id || months <= 0) return;
+  await prisma.organization.update({
+    where: { id },
+    data: { premiumUntil: addMonthsFromNow(months) },
+  });
+  revalidatePath("/admin/organizations");
+}
+
+export async function deleteOrganization(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") || "");
+  if (!id) return;
+  // メンバーの所属を外してから削除（onDelete: SetNull でも明示）
+  await prisma.user.updateMany({
+    where: { organizationId: id },
+    data: { organizationId: null },
+  });
+  await prisma.organization.delete({ where: { id } });
+  revalidatePath("/admin/organizations");
+}
+
+// メールアドレスで既存学生を組織に追加する。
+export async function addMemberByEmail(formData: FormData) {
+  await requireAdmin();
+  const organizationId = String(formData.get("organizationId") || "");
+  const email = String(formData.get("email") || "").trim();
+  if (!organizationId || !email) return;
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return;
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { organizationId },
+  });
+  revalidatePath("/admin/organizations");
+}
+
+export async function removeMember(formData: FormData) {
+  await requireAdmin();
+  const userId = String(formData.get("userId") || "");
+  if (!userId) return;
+  await prisma.user.update({
+    where: { id: userId },
+    data: { organizationId: null },
+  });
+  revalidatePath("/admin/organizations");
+}

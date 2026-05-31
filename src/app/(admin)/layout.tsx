@@ -2,7 +2,9 @@ import { requireAdmin } from "@/lib/session";
 import { Shell, type NavItem } from "@/components/Shell";
 
 const nav: NavItem[] = [
+  { href: "/admin/dashboard", label: "ダッシュボード", icon: "📊" },
   { href: "/admin/users", label: "ユーザー管理", icon: "👥" },
+  { href: "/admin/organizations", label: "組織契約(B2B)", icon: "🏫" },
   { href: "/admin/reports", label: "通報管理", icon: "🚩" },
   { href: "/admin/contents", label: "コンテンツ管理", icon: "📚" },
   { href: "/admin/essay-themes", label: "小論文お題管理", icon: "✍️" },

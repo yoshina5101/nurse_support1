@@ -6,7 +6,7 @@ import { Logo } from "@/components/Logo";
 export default async function Home() {
   const user = await getCurrentUser();
   if (user) {
-    redirect(user.role === "ADMIN" ? "/admin/users" : "/dashboard");
+    redirect(user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
   }
 
   const features = [

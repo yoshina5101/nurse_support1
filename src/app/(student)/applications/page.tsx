@@ -7,6 +7,7 @@ import {
 import { ApplicationCard } from "@/components/ApplicationCard";
 import { AddApplicationForm } from "@/components/AddApplicationForm";
 import { UpcomingSchedule } from "@/components/UpcomingSchedule";
+import { EmptyState } from "@/components/EmptyState";
 
 export default async function ApplicationsPage() {
   const user = await requireUser();
@@ -54,9 +55,11 @@ export default async function ApplicationsPage() {
 
       {/* 一覧 */}
       {applications.length === 0 ? (
-        <div className="card text-center text-sm text-gray-500">
-          まだ応募先が登録されていません。気になる病院を追加して、就活の進捗を管理しましょう 🌱
-        </div>
+        <EmptyState
+          icon="🏥"
+          title="まだ応募先がありません"
+          description="気になる病院・施設を追加すると、選考状況や見学日・締切をまとめて管理できます。上の「＋ 応募先を追加する」から登録してみましょう。"
+        />
       ) : (
         <div className="space-y-4">
           {applications.map((app) => (

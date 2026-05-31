@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/Toast";
 
 type Field = { key: string; label: string; multiline?: boolean; hint?: string };
 
@@ -18,6 +19,7 @@ export function ResumeForm({
   };
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [id, setId] = useState<string | undefined>(initial?.id);
   const [title, setTitle] = useState(initial?.title ?? "私の履歴書");
   const [content, setContent] = useState<Record<string, string>>(
@@ -43,12 +45,15 @@ export function ResumeForm({
       if (!res.ok) throw new Error(data.error || "処理に失敗しました。");
       setId(data.id);
       if (review) setFeedback(data.aiFeedback);
-      setMessage(review ? "AI添削が完了しました。" : "保存しました。");
+      const msg = review ? "AI添削が完了しました。" : "保存しました。";
+      setMessage(msg);
+      toast.show(msg, "success");
       router.refresh();
     } catch (err) {
-      setMessage(
-        err instanceof Error ? err.message : "処理に失敗しました。もう一度お試しください。"
-      );
+      const msg =
+        err instanceof Error ? err.message : "処理に失敗しました。もう一度お試しください。";
+      setMessage(msg);
+      toast.show(msg, "error");
     } finally {
       setReviewing(false);
       setSaving(false);
