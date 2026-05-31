@@ -17,9 +17,9 @@ export async function issueEmailVerification(
   const link = `${base}/verify-email?token=${token}`;
   const sent = await sendMail({
     to: email,
-    subject: "【ナースキャリア】メールアドレスの確認",
+    subject: "【あかり】メールアドレスの確認",
     text:
-      "ナースキャリアにご登録ありがとうございます。\n\n" +
+      "あかりにご登録ありがとうございます。\n\n" +
       "以下のリンクをクリックして、メールアドレスの確認を完了してください（24時間有効）。\n\n" +
       `${link}\n\n` +
       "心当たりがない場合は、このメールを破棄してください。",
@@ -39,7 +39,7 @@ export async function requestPasswordReset(
   const link = `${base}/reset-password?token=${token}`;
   const sent = await sendMail({
     to: email,
-    subject: "【ナースキャリア】パスワードの再設定",
+    subject: "【あかり】パスワードの再設定",
     text:
       "パスワード再設定のリクエストを受け付けました。\n\n" +
       "以下のリンクから新しいパスワードを設定してください（1時間有効）。\n\n" +

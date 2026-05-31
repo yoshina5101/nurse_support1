@@ -239,7 +239,7 @@ export default async function Home() {
               特定商取引法に基づく表記
             </Link>
           </nav>
-          <p className="text-xs text-gray-400">© ナースキャリア</p>
+          <p className="text-xs text-gray-400">© あかり</p>
         </div>
       </footer>
     </main>

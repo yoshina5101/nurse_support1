@@ -1,21 +1,28 @@
-// ハート＋医療の十字を組み合わせたロゴマーク（温かみ＋看護らしさ）。
+// 灯り（看護のランプ）をモチーフにしたロゴマーク。やわらかな光で「そばに灯る」イメージ。
 export function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"
       className={className}
       role="img"
-      aria-label="ナースキャリア"
+      aria-label="あかり"
     >
-      {/* ハート */}
+      {/* 灯りのまわりのやわらかな光 */}
+      <circle cx="16" cy="13" r="11" fill="#ffe6dc" />
+      {/* 炎（しずく型のあかり） */}
       <path
-        d="M16 27.5C16 27.5 4 20.5 4 12.2 4 8.2 7 5.5 10.4 5.5c2.3 0 4.4 1.3 5.6 3.3 1.2-2 3.3-3.3 5.6-3.3C25 5.5 28 8.2 28 12.2 28 20.5 16 27.5 16 27.5z"
-        fill="#2a9d87"
+        d="M16 4c3.4 3.2 5.6 6.2 5.6 9.4a5.6 5.6 0 1 1-11.2 0C10.4 10.2 12.6 7.2 16 4z"
+        fill="#f96a3d"
       />
-      {/* 中央の十字（白抜き） */}
+      {/* 炎の内側のハイライト */}
       <path
-        d="M14.6 9.8h2.8v3.4h3.4v2.8h-3.4v3.4h-2.8v-3.4h-3.4v-2.8h3.4z"
-        fill="#fff"
+        d="M16 9.5c1.6 1.6 2.6 3.1 2.6 4.6a2.6 2.6 0 1 1-5.2 0c0-1.5 1-3 2.6-4.6z"
+        fill="#ffd0bd"
+      />
+      {/* 台座（やさしい曲線） */}
+      <path
+        d="M9.5 24.5c2-1.4 4.2-2.1 6.5-2.1s4.5.7 6.5 2.1c-1.8 2.2-4 3.3-6.5 3.3s-4.7-1.1-6.5-3.3z"
+        fill="#2a9d87"
       />
     </svg>
   );
@@ -31,9 +38,7 @@ export function Logo({
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <LogoMark />
-      <span className={`font-bold text-brand-700 ${textClass}`}>
-        ナースキャリア
-      </span>
+      <span className={`font-bold text-brand-700 ${textClass}`}>あかり</span>
     </span>
   );
 }

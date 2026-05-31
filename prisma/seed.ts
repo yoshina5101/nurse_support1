@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { ESSAY_THEMES } from "./essayThemesData";
 
 const prisma = new PrismaClient();
 
@@ -88,31 +89,14 @@ async function main() {
     });
   }
 
-  // 小論文お題
-  const themeCount = await prisma.essayTheme.count();
-  if (themeCount === 0) {
-    await prisma.essayTheme.createMany({
-      data: [
-        {
-          title: "理想の看護師像",
-          prompt:
-            "あなたが目指す理想の看護師像について、これまでの経験を踏まえて800字程度で述べなさい。",
-          isPremium: false,
-        },
-        {
-          title: "チーム医療における看護師の役割",
-          prompt:
-            "チーム医療において看護師が果たすべき役割について、あなたの考えを800字程度で述べなさい。",
-          isPremium: false,
-        },
-        {
-          title: "【有料】高齢化社会と地域医療",
-          prompt:
-            "高齢化社会が進む中で、地域医療に求められる看護のあり方についてあなたの考えを1000字程度で述べなさい。",
-          isPremium: true,
-        },
-      ],
-    });
+  // 小論文お題（タイトル一致で未登録のものだけ追加。既存環境にも増分投入される）
+  const existingThemes = await prisma.essayTheme.findMany({
+    select: { title: true },
+  });
+  const existingTitles = new Set(existingThemes.map((t) => t.title));
+  const newThemes = ESSAY_THEMES.filter((t) => !existingTitles.has(t.title));
+  if (newThemes.length > 0) {
+    await prisma.essayTheme.createMany({ data: newThemes });
   }
 
   // 面接質問

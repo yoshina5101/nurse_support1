@@ -10,7 +10,7 @@ export default function LegalLayout({
       <header className="border-b border-gray-200">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
           <Link href="/" className="font-bold text-brand-700">
-            ナースキャリア
+            あかり
           </Link>
           <nav className="flex gap-4 text-sm text-gray-500">
             <Link href="/legal/terms" className="hover:text-brand-700">

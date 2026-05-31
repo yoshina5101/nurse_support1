@@ -4,7 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
-  title: "ナースキャリア | 新卒看護師の就活支援",
+  title: "あかり | 新卒看護師の就活支援",
   description: "新卒看護師のための就職活動支援アプリ。自己分析・履歴書・小論文をAIが添削します。",
 };
 

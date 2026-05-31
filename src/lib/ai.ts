@@ -62,20 +62,28 @@ function extractScore(feedback: string): number | null {
   return match ? Math.min(100, parseInt(match[1], 10)) : null;
 }
 
-// 自己分析：まず5問の回答から「強み」を抽出・要約し、さらにその強みを深掘りする。
+// 自己分析：選択式ウィザードの回答と、集計で判定された強みをもとに、
+// その強みを就活で武器にするための深掘りを行う。
 export async function summarizeSelfAnalysis(
-  answers: Record<string, string>
+  answers: Record<string, string>,
+  topStrengths?: string[]
 ): Promise<string> {
   const formatted = Object.entries(answers)
     .map(([q, a]) => `Q: ${q}\nA: ${a || "(未回答)"}`)
     .join("\n\n");
+  const strengthsLine =
+    topStrengths && topStrengths.length > 0
+      ? `診断で特定された主な強み：${topStrengths.join("、")}\n\n`
+      : "";
   const prompt =
-    "以下は新卒看護師を目指す方の自己分析（5問）の回答です。次の構成で日本語でまとめてください。\n\n" +
-    "【あなたの強み】\n回答全体から読み取れる強みを2〜3個、根拠（どの回答から読み取れるか）とともに箇条書きで示す。\n\n" +
-    "【強みの深掘り】\n上で挙げた強みごとに、就職活動で武器にするための問いを投げかけてください。" +
+    "以下は新卒看護師を目指す方の自己分析（選択式5問）の回答と、回答から判定された強みです。" +
+    "この強みを就職活動で活かせるよう、次の構成で日本語でまとめてください。\n\n" +
+    strengthsLine +
+    "【あなたの強み】\n判定された強みを、回答内容を根拠として一人ひとりに語りかけるように説明する（2〜3個）。\n\n" +
+    "【強みの深掘り】\n強みごとに、就職活動で武器にするための問いを投げかけてください。" +
     "具体的には『その強みを発揮した具体的なエピソードは？』『その時どう行動し、どんな結果が出たか？』" +
     "『その強みを入職後どう活かせるか？』を、本人が答えやすい形で1つずつ問いかける。\n\n" +
-    "【補足アドバイス】\n弱み・課題の補い方、向いていそうな職場・診療科の傾向を簡潔に。\n\n" +
+    "【志望動機・自己PRへの活かし方】\nこの強みを履歴書や面接でどう伝えると効果的か、簡潔にアドバイスする。\n\n" +
     formatted;
   return callClaude(prompt, 2000);
 }

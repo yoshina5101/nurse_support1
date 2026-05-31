@@ -1,4 +1,4 @@
-export const metadata = { title: "特定商取引法に基づく表記 | ナースキャリア" };
+export const metadata = { title: "特定商取引法に基づく表記 | あかり" };
 
 export default function TokushohoPage() {
   const rows: [string, string][] = [

@@ -1,11 +1,11 @@
-export const metadata = { title: "プライバシーポリシー | ナースキャリア" };
+export const metadata = { title: "プライバシーポリシー | あかり" };
 
 export default function PrivacyPage() {
   return (
     <>
       <h1 className="text-xl font-bold text-gray-800">プライバシーポリシー</h1>
       <p>
-        ナースキャリア（以下「本サービス」）は、利用者の個人情報を適切に取り扱う
+        あかり（以下「本サービス」）は、利用者の個人情報を適切に取り扱う
         ことを重要な責務と考え、個人情報の保護に関する法律その他関係法令を遵守
         します。
       </p>

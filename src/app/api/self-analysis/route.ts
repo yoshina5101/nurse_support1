@@ -8,8 +8,9 @@ export async function POST(req: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  const { answers } = (await req.json()) as {
+  const { answers, strengths } = (await req.json()) as {
     answers: Record<string, string>;
+    strengths?: string[];
   };
   if (!answers || typeof answers !== "object") {
     return NextResponse.json({ error: "invalid" }, { status: 400 });
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const aiSummary = await summarizeSelfAnalysis(answers);
+  const aiSummary = await summarizeSelfAnalysis(answers, strengths);
 
   const record = await prisma.selfAnalysis.create({
     data: { userId: user.id, answers, aiSummary },

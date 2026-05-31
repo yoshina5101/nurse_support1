@@ -1,11 +1,11 @@
-export const metadata = { title: "利用規約 | ナースキャリア" };
+export const metadata = { title: "利用規約 | あかり" };
 
 export default function TermsPage() {
   return (
     <>
       <h1 className="text-xl font-bold text-gray-800">利用規約</h1>
       <p>
-        本利用規約（以下「本規約」）は、ナースキャリア（以下「本サービス」）の
+        本利用規約（以下「本規約」）は、あかり（以下「本サービス」）の
         利用条件を定めるものです。利用者は、本規約に同意のうえ本サービスを
         利用するものとします。
       </p>
