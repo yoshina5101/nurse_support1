@@ -5,7 +5,18 @@ export const SETTING_DEFAULTS = {
   freeDailyLimit: "3", // 無料会員の1日あたりAI利用回数
   premiumDailyLimit: "30", // 有料会員の1日あたりAI利用回数（-1で無制限）
   premiumPriceJpy: "980", // プレミアムの月額（円）
+  sixMonthPriceJpy: "4980", // 6ヶ月パックの価格（円・買い切り）
 } as const;
+
+// 6ヶ月パックの有効月数。
+export const SIX_MONTH_MONTHS = 6;
+
+// 基準日から Nヶ月後の日時を返す。
+export function addMonths(base: Date, months: number): Date {
+  const d = new Date(base);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
 
 export type SettingKey = keyof typeof SETTING_DEFAULTS;
 
@@ -46,4 +57,9 @@ export async function getAiDailyLimit(
 export async function getPremiumPriceJpy(): Promise<number> {
   const n = parseInt(await getSetting("premiumPriceJpy"), 10);
   return Number.isFinite(n) ? n : 980;
+}
+
+export async function getSixMonthPriceJpy(): Promise<number> {
+  const n = parseInt(await getSetting("sixMonthPriceJpy"), 10);
+  return Number.isFinite(n) ? n : 4980;
 }

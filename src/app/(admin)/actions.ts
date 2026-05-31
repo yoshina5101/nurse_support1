@@ -202,6 +202,7 @@ export async function updateSettings(formData: FormData) {
       String(formData.get("premiumDailyLimit") ?? "").trim(),
     ],
     ["premiumPriceJpy", String(formData.get("premiumPriceJpy") ?? "").trim()],
+    ["sixMonthPriceJpy", String(formData.get("sixMonthPriceJpy") ?? "").trim()],
   ];
   for (const [key, value] of entries) {
     // 数値として妥当なものだけ保存（premiumDailyLimit は -1=無制限を許可）

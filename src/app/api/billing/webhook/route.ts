@@ -28,6 +28,7 @@ export async function POST(req: Request) {
       const session = event.data.object as Stripe.Checkout.Session;
       const userId =
         session.metadata?.userId || session.client_reference_id || null;
+      const kind = session.metadata?.kind;
       const customerId =
         typeof session.customer === "string" ? session.customer : null;
       if (userId) {
@@ -35,6 +36,11 @@ export async function POST(req: Request) {
           where: { id: userId },
           data: {
             plan: "PREMIUM",
+            // 6ヶ月パックは買い切り → 期限をセット。月額サブスクは期限なし。
+            premiumUntil:
+              kind === "sixmonth"
+                ? addMonths(new Date(), SIX_MONTH_MONTHS)
+                : null,
             ...(customerId ? { stripeCustomerId: customerId } : {}),
           },
         });
@@ -49,7 +55,10 @@ export async function POST(req: Request) {
         const user = await prisma.user.findUnique({
           where: { stripeCustomerId: customerId },
         });
-        if (user) {
+        // 有効な6ヶ月パック（premiumUntilが未来）が残っている場合は維持する。
+        const hasActivePack =
+          user?.premiumUntil && user.premiumUntil.getTime() > Date.now();
+        if (user && !hasActivePack) {
           await prisma.user.update({
             where: { id: user.id },
             data: { plan: "FREE" },

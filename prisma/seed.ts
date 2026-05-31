@@ -192,6 +192,7 @@ async function main() {
     { key: "freeDailyLimit", value: "3" },
     { key: "premiumDailyLimit", value: "30" },
     { key: "premiumPriceJpy", value: "980" },
+    { key: "sixMonthPriceJpy", value: "4980" },
   ];
   for (const s of settingsDefaults) {
     await prisma.appSetting.upsert({

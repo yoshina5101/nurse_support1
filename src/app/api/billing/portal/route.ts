@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     // ダミーモード：即時に無料会員へ戻す（動作確認用）。
     await prisma.user.update({
       where: { id: user.id },
-      data: { plan: "FREE" },
+      data: { plan: "FREE", premiumUntil: null },
     });
     return NextResponse.json({ url: "/billing?downgraded=dummy" });
   }

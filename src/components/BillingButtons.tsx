@@ -3,20 +3,35 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function BillingButtons({ plan }: { plan: "FREE" | "PREMIUM" }) {
+type Kind = "monthly" | "sixmonth" | "cancel";
+
+export function BillingButtons({
+  kind,
+  label,
+  accent = false,
+}: {
+  kind: Kind;
+  label: string;
+  accent?: boolean;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function go(path: string) {
+  async function go() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(path, { method: "POST" });
+      const path =
+        kind === "cancel" ? "/api/billing/portal" : "/api/billing/checkout";
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: kind === "cancel" ? undefined : JSON.stringify({ kind }),
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "処理に失敗しました。");
       if (data.url) {
-        // 外部(Stripe)URLは遷移、内部URLはルーター更新
         if (data.url.startsWith("http")) {
           window.location.href = data.url;
         } else {
@@ -31,25 +46,18 @@ export function BillingButtons({ plan }: { plan: "FREE" | "PREMIUM" }) {
     }
   }
 
+  const cls =
+    kind === "cancel"
+      ? "btn-secondary"
+      : accent
+        ? "btn-accent w-full"
+        : "btn-primary w-full";
+
   return (
     <div className="space-y-2">
-      {plan === "FREE" ? (
-        <button
-          className="btn-primary"
-          disabled={loading}
-          onClick={() => go("/api/billing/checkout")}
-        >
-          {loading ? "処理中..." : "プレミアムにアップグレード"}
-        </button>
-      ) : (
-        <button
-          className="btn-secondary"
-          disabled={loading}
-          onClick={() => go("/api/billing/portal")}
-        >
-          {loading ? "処理中..." : "プランを管理・解約する"}
-        </button>
-      )}
+      <button className={cls} disabled={loading} onClick={go}>
+        {loading ? "処理中..." : label}
+      </button>
       {error && <p className="text-sm text-red-600">{error}</p>}
     </div>
   );

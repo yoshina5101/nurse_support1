@@ -39,6 +39,7 @@ model User {
   status           UserStatus @default(ACTIVE)
   emailVerified    DateTime?
   stripeCustomerId String?    @unique
+  premiumUntil     DateTime?  // 6ヶ月パック等、買い切りプレミアムの有効期限
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
 

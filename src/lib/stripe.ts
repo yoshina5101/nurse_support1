@@ -11,5 +11,8 @@ export const stripeEnabled = Boolean(stripe);
 // 月額サブスクに使う Stripe Price ID（本番のみ必要）。
 export const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || "";
 
+// 6ヶ月パック（買い切り・1回払い）に使う Stripe Price ID（本番のみ必要）。
+export const STRIPE_PRICE_ID_6MO = process.env.STRIPE_PRICE_ID_6MO || "";
+
 // Webhook 署名シークレット（本番のみ必要）。
 export const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";

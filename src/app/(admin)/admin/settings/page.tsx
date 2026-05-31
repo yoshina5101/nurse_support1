@@ -68,6 +68,23 @@ export default async function AdminSettingsPage() {
           )}
         </div>
 
+        <div>
+          <label className="label" htmlFor="sixMonthPriceJpy">
+            6ヶ月パック料金（円・買い切り）
+          </label>
+          <input
+            id="sixMonthPriceJpy"
+            name="sixMonthPriceJpy"
+            type="number"
+            min={0}
+            defaultValue={settings.sixMonthPriceJpy}
+            className="input"
+          />
+          <p className="mt-1 text-xs text-gray-400">
+            就活期間向けの買い切りプラン。購入時点から6ヶ月間プレミアムになります。
+          </p>
+        </div>
+
         <button className="btn-primary">保存する</button>
       </form>
     </div>

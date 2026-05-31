@@ -153,7 +153,7 @@ export default async function Home() {
             まずは無料で。もっと使いたくなったらプレミアムへ。
           </p>
         </div>
-        <div className="mx-auto mt-9 grid max-w-3xl gap-5 sm:grid-cols-2">
+        <div className="mx-auto mt-9 grid max-w-4xl gap-5 lg:grid-cols-3">
           <div className="card">
             <h3 className="font-bold text-gray-800">無料プラン</h3>
             <p className="mt-2 text-3xl font-bold text-gray-800">¥0</p>
@@ -166,11 +166,8 @@ export default async function Home() {
               無料ではじめる
             </Link>
           </div>
-          <div className="card relative border-accent-200 ring-2 ring-accent-200">
-            <span className="badge absolute -top-3 left-6 bg-accent-500 text-white">
-              おすすめ
-            </span>
-            <h3 className="font-bold text-gray-800">プレミアムプラン</h3>
+          <div className="card">
+            <h3 className="font-bold text-gray-800">月額プレミアム</h3>
             <p className="mt-2 text-3xl font-bold text-gray-800">
               ¥980
               <span className="text-sm font-normal text-gray-500">/月</span>
@@ -180,8 +177,29 @@ export default async function Home() {
               <li>✓ 有料お題・有料質問・限定コンテンツ</li>
               <li>✓ 個別キャリア相談ルーム</li>
             </ul>
+            <Link href="/register" className="btn-primary mt-6 w-full">
+              月額ではじめる
+            </Link>
+          </div>
+          <div className="card relative border-accent-200 ring-2 ring-accent-200">
+            <span className="badge absolute -top-3 left-6 bg-accent-500 text-white">
+              おすすめ・お得
+            </span>
+            <h3 className="font-bold text-gray-800">6ヶ月パック</h3>
+            <p className="mt-2 text-3xl font-bold text-gray-800">
+              ¥4,980
+              <span className="text-sm font-normal text-gray-500">/6ヶ月</span>
+            </p>
+            <p className="text-xs text-accent-600">
+              月あたり ¥830（月額より約15%お得）
+            </p>
+            <ul className="mt-4 space-y-2 text-sm text-gray-600">
+              <li>✓ プレミアム機能をすべて利用</li>
+              <li>✓ 就活期間にぴったりの買い切り</li>
+              <li>✓ 自動更新なしで安心</li>
+            </ul>
             <Link href="/register" className="btn-accent mt-6 w-full">
-              プレミアムを試す
+              6ヶ月パックを試す
             </Link>
           </div>
         </div>
