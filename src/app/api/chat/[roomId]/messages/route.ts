@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/db";
+import { checkMessage } from "@/lib/moderation";
 
 async function checkAccess(roomId: string, userPlan: string) {
   const room = await prisma.chatRoom.findUnique({ where: { id: roomId } });
@@ -59,6 +60,19 @@ export async function POST(
   const { body } = (await req.json()) as { body: string };
   if (!body || !body.trim()) {
     return NextResponse.json({ error: "empty" }, { status: 400 });
+  }
+
+  // 誹謗中傷・不適切ワードのチェック（投稿前にブロック）
+  const moderation = checkMessage(body);
+  if (!moderation.ok) {
+    return NextResponse.json(
+      {
+        error:
+          "不適切な表現が含まれているため投稿できません。相手を思いやった言葉づかいでお願いします。",
+        matched: moderation.matched,
+      },
+      { status: 422 }
+    );
   }
 
   const message = await prisma.chatMessage.create({

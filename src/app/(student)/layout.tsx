@@ -6,6 +6,7 @@ const nav: NavItem[] = [
   { href: "/self-analysis", label: "自己分析", icon: "🔍" },
   { href: "/resume", label: "履歴書", icon: "📄" },
   { href: "/essay", label: "小論文", icon: "✍️" },
+  { href: "/interview", label: "面接練習", icon: "🎤" },
   { href: "/chat", label: "チャット", icon: "💬" },
   { href: "/contents", label: "お役立ち記事", icon: "📚" },
 ];

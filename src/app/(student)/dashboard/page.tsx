@@ -5,17 +5,18 @@ import { prisma } from "@/lib/db";
 export default async function DashboardPage() {
   const user = await requireUser();
 
-  const [selfCount, resumeCount, essayCount] = await Promise.all([
+  const [selfCount, resumeCount, essayCount, interviewCount] = await Promise.all([
     prisma.selfAnalysis.count({ where: { userId: user.id } }),
     prisma.resume.count({ where: { userId: user.id } }),
     prisma.essay.count({ where: { userId: user.id } }),
+    prisma.interviewSession.count({ where: { userId: user.id } }),
   ]);
 
   const cards = [
     {
       href: "/self-analysis",
       title: "自己分析",
-      desc: "設問に答えて、AIにあなたの強み・向いている職場を分析してもらいましょう。",
+      desc: "5問に答えて、AIに強みを抽出・深掘りしてもらいましょう。",
       count: `${selfCount} 件`,
       icon: "🔍",
     },
@@ -32,6 +33,13 @@ export default async function DashboardPage() {
       desc: "お題に沿って小論文を書き、AIの添削と点数で実力を確認しましょう。",
       count: `${essayCount} 件`,
       icon: "✍️",
+    },
+    {
+      href: "/interview",
+      title: "面接練習・レビュー",
+      desc: "質問に声で回答（録音→文字起こし）。AIが面接官目線でレビューします。",
+      count: `${interviewCount} 件`,
+      icon: "🎤",
     },
     {
       href: "/chat",

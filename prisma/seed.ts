@@ -115,6 +115,51 @@ async function main() {
     });
   }
 
+  // 面接質問
+  const interviewCount = await prisma.interviewQuestion.count();
+  if (interviewCount === 0) {
+    await prisma.interviewQuestion.createMany({
+      data: [
+        {
+          text: "当院を志望した理由を教えてください。",
+          category: "志望動機",
+          isPremium: false,
+          order: 1,
+        },
+        {
+          text: "看護師を目指したきっかけは何ですか？",
+          category: "自己理解",
+          isPremium: false,
+          order: 2,
+        },
+        {
+          text: "学生時代に最も力を入れたことを教えてください。",
+          category: "経験",
+          isPremium: false,
+          order: 3,
+        },
+        {
+          text: "あなたの長所と短所を教えてください。",
+          category: "自己理解",
+          isPremium: false,
+          order: 4,
+        },
+        {
+          text: "どのような看護師になりたいですか？",
+          category: "看護観",
+          isPremium: false,
+          order: 5,
+        },
+        {
+          text: "これまでで最も困難だった経験と、それをどう乗り越えたか教えてください。",
+          category: "深掘り",
+          isPremium: true,
+          order: 6,
+        },
+      ],
+    });
+  }
+
   // コンテンツ
   const contentCount = await prisma.content.count();
   if (contentCount === 0) {

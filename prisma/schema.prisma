@@ -44,7 +44,8 @@ model User {
   resumes      Resume[]
   essays       Essay[]
   messages     ChatMessage[]
-  reports      Report[]       @relation("Reporter")
+  reports      Report[]            @relation("Reporter")
+  interviews   InterviewSession[]
 }
 
 // 自己分析：設問への回答（JSON）とAIによる要約
@@ -130,6 +131,32 @@ model Report {
   status     ReportStatus @default(OPEN)
   createdAt  DateTime     @default(now())
   resolvedAt DateTime?
+}
+
+// 面接質問マスタ
+model InterviewQuestion {
+  id        String   @id @default(cuid())
+  text      String   @db.Text
+  category  String   @default("一般")
+  isPremium Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  sessions InterviewSession[]
+}
+
+// 面接練習セッション（1問1回答。音声は保存せず文字起こしのみ）
+model InterviewSession {
+  id         String             @id @default(cuid())
+  userId     String
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId String?
+  question   InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  questionText String           @db.Text
+  answer     String             @db.Text
+  aiFeedback String?            @db.Text
+  score      Int?
+  createdAt  DateTime           @default(now())
 }
 
 // 有料/無料コンテンツ

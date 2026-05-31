@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Field = { key: string; label: string; multiline?: boolean };
+type Field = { key: string; label: string; multiline?: boolean; hint?: string };
 
 export function ResumeForm({
   fields,
@@ -67,6 +67,9 @@ export function ResumeForm({
         {fields.map((f) => (
           <div key={f.key}>
             <label className="label">{f.label}</label>
+            {f.hint && (
+              <p className="mb-1 text-xs text-brand-600">{f.hint}</p>
+            )}
             {f.multiline ? (
               <textarea
                 className="input min-h-[90px]"

@@ -18,7 +18,7 @@ export default async function SelfAnalysisPage() {
       <div>
         <h2 className="text-xl font-bold text-gray-800">自己分析ツール</h2>
         <p className="mt-1 text-sm text-gray-500">
-          設問に答えると、AIがあなたの強み・課題・向いている職場の傾向を分析します。
+          5つの設問に答えると、AIがあなたの強みを抽出し、就活で武器にするための深掘りの問いを返します。
         </p>
       </div>
 

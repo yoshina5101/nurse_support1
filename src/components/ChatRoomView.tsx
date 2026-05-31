@@ -15,6 +15,7 @@ export function ChatRoomView({ roomId }: { roomId: string }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [warning, setWarning] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -45,15 +46,24 @@ export function ChatRoomView({ roomId }: { roomId: string }) {
     e.preventDefault();
     if (!input.trim()) return;
     setSending(true);
+    setWarning(null);
     const body = input;
-    setInput("");
     try {
-      await fetch(`/api/chat/${roomId}/messages`, {
+      const res = await fetch(`/api/chat/${roomId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ body }),
       });
-      await load();
+      if (res.ok) {
+        setInput("");
+        await load();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        // 誹謗中傷ワード等でブロックされた場合は入力を残して警告表示
+        setWarning(data.error || "メッセージを送信できませんでした。");
+      }
+    } catch {
+      setWarning("通信エラーが発生しました。もう一度お試しください。");
     } finally {
       setSending(false);
     }
@@ -116,17 +126,27 @@ export function ChatRoomView({ roomId }: { roomId: string }) {
         ))}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={send} className="flex gap-2 border-t border-gray-100 p-3">
-        <input
-          className="input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="メッセージを入力..."
-        />
-        <button className="btn-primary shrink-0" disabled={sending}>
-          送信
-        </button>
-      </form>
+      <div className="border-t border-gray-100 p-3">
+        {warning && (
+          <p className="mb-2 rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+            {warning}
+          </p>
+        )}
+        <form onSubmit={send} className="flex gap-2">
+          <input
+            className="input"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              if (warning) setWarning(null);
+            }}
+            placeholder="メッセージを入力..."
+          />
+          <button className="btn-primary shrink-0" disabled={sending}>
+            送信
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
