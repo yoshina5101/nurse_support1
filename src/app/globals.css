@@ -65,3 +65,14 @@ body {
 .animate-fade-in-up {
   animation: fade-in-up 0.4s ease-out both;
 }
+
+/* 印刷時の設定（履歴書PDF出力用） */
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+  body {
+    background: #fff;
+  }
+}

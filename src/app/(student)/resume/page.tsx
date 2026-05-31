@@ -22,12 +22,19 @@ export default async function ResumePage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-gray-800">履歴書作成・AI添削</h2>
-        <p className="mt-1 text-sm text-gray-500">
-          各項目を入力し、採用担当者目線でのAI添削を受けましょう。志望動機は「なぜその病院・施設か／看護観」、
-          自己PRは「強みのエビデンス（経験・行動・結果）／強みの生かし方」を基準に添削します。
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-gray-800">履歴書作成・AI添削</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            各項目を入力し、採用担当者目線でのAI添削を受けましょう。志望動機は「なぜその病院・施設か／看護観」、
+            自己PRは「強みのエビデンス（経験・行動・結果）／強みの生かし方」を基準に添削します。
+          </p>
+        </div>
+        {initial && (
+          <a href="/resume/print" target="_blank" className="btn-secondary shrink-0">
+            🖨️ PDF出力
+          </a>
+        )}
       </div>
       <ResumeForm fields={RESUME_FIELDS} initial={initial} />
     </div>

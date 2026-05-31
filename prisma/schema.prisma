@@ -51,6 +51,53 @@ model User {
   interviews   InterviewSession[]
   aiUsages     AiUsage[]
   tokens       VerificationToken[]
+  applications Application[]
+}
+
+// 応募先（病院・施設）の選考ステータス。
+enum ApplicationStatus {
+  INTERESTED // 気になる
+  APPLIED    // 応募済み
+  SCREENING  // 書類選考中
+  INTERVIEW  // 面接
+  OFFER      // 内定
+  REJECTED   // 不採用
+  DECLINED   // 辞退
+}
+
+// 応募先（病院・施設）と選考の進捗管理。
+model Application {
+  id           String            @id @default(cuid())
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  hospitalName String // 病院・施設名
+  department   String            @default("") // 希望部署・診療科
+  status       ApplicationStatus @default(INTERESTED)
+  memo         String            @db.Text @default("")
+  // 主要な日程（任意）
+  visitDate    DateTime? // 見学日
+  deadline     DateTime? // 応募締切
+  examDate     DateTime? // 試験・面接日
+  sortOrder    Int               @default(0)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  tasks ApplicationTask[]
+
+  @@index([userId, status])
+}
+
+// 応募先ごとのTODO（提出物・準備など）。締切リマインドにも使える。
+model ApplicationTask {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  title         String
+  dueDate       DateTime?
+  done          Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  @@index([applicationId])
 }
 
 enum TokenType {

@@ -5,6 +5,7 @@ import { VerifyBanner } from "@/components/VerifyBanner";
 
 const nav: NavItem[] = [
   { href: "/dashboard", label: "ダッシュボード", icon: "🏠" },
+  { href: "/applications", label: "応募先・選考管理", icon: "🏥" },
   { href: "/self-analysis", label: "自己分析", icon: "🔍" },
   { href: "/resume", label: "履歴書", icon: "📄" },
   { href: "/essay", label: "小論文", icon: "✍️" },
